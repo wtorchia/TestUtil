@@ -17,6 +17,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 
 import Core.BrowserManager;
 import Core.BrowserManager.BrowserData;
+import Core.TaskProccesor.Task;
 import Core.SeleniumHelper;
 import Core.TaskProccesor;
 
@@ -33,25 +34,18 @@ public class CommandLine {
 		return input;
 	}
 	
-	static WebElement FindElement(WebDriver webDriver, String locationType, String location)
-	{
-		By findBy = null;
-		WebElement element = null;
-		
-		if(locationType.contentEquals("id")){
-			element = webDriver.findElement(By.id(location));	
-		}
-		
-		return element;
-	}
 	
-	public static void main(String[] args) throws Exception  {		
+	
+	public static void main(String[] args) throws Exception 
+	{		
 		
-		//TaskProccesor taskProccesor = new TaskProccesor();
+		TaskProccesor taskProccesor = new TaskProccesor();
 		
-		//ArrayList<String> list = taskProccesor.GetTaskList();
+		//ArrayList<String> taskNameList = taskProccesor.GetTaskNames();
 		
+		ArrayList<Task> taskList = taskProccesor.GetAllTasks();
 		
+		/*
 		BrowserManager browserManager = new Core.BrowserManager();
 		BrowserData Chrome1  = browserManager.startChrome();
 		
@@ -65,7 +59,7 @@ public class CommandLine {
 		
 		thing.sendKeys(Keys.RETURN);		
 		
-		
+		*/
 		getCommand();
     }
 }
