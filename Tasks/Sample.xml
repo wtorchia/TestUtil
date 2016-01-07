@@ -7,40 +7,40 @@
 		<StepNumber>1</StepNumber>
 		<Actions>
 			<get>www.google.com</get>
-			<SendKey>
-				<Text> Step1</Text>
+			<sendKeys>
+				<Text>Step 1 text</Text>
 				<By>
 					<Type>id</Type>
 					<Name>lst-ib</Name>
 				</By>
-			</SendKey>
-			<SendKey>
+			</sendKeys>
+			<sendKeys>
 				<Text>ENTER</Text>
 				<By>
 					<Type>id</Type>
 					<Name>lst-ib</Name>
 				</By>
-			</SendKey>
+			</sendKeys>
 		</Actions>
 	</Step>
 	<Step>
 		<StepNumber>2</StepNumber>
 		<Actions>
-			<OpenURL>www.google.com</OpenURL>
-			<SendKey>
-				<Text> Step2</Text>
+			<get>www.google.com</get>
+			<sendKeys>
+				<Text>Step 2 text</Text>
 				<By>
 					<Type>id</Type>
 					<Name>lst-ib</Name>
 				</By>
-			</SendKey>
-			<SendKey>
-				<Key>ENTER</Key>
+			</sendKeys>
+			<sendKeys>
+				<Text>ENTER</Text>
 				<By>
 					<Type>id</Type>
 					<Name>lst-ib</Name>
 				</By>
-			</SendKey>
+			</sendKeys>
 		</Actions>
 	</Step>
 

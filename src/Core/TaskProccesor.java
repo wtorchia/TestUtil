@@ -1,10 +1,6 @@
 package Core;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -13,25 +9,26 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 
 public class TaskProccesor
 {
+	public String m_xmlPath = "C:\\Users\\wtorchia\\workspace\\TestUtil\\Tasks";
+	
 	public class StepAction 
 	{
-		public String m_action;
+		public String m_action; 
 		public String m_by;
 		public String m_location;
+		public String m_text;			
 		
-		StepAction(String action,String by, String location)
+		StepAction(String action,String by, String location, String text)
 		{
 			m_action = action;
 			m_by = by;
-			m_location = location;			
+			m_location = location;	
+			m_text = text;
 		}
 	}
 	
@@ -59,8 +56,6 @@ public class TaskProccesor
 		}
 	}
 	
-	public String m_xmlPath = "C:\\Users\\wtorchia\\workspace\\TestUtil\\Tasks";
-	
 	
 	public ArrayList<String> GetTaskFileNames()
 	{
@@ -74,91 +69,86 @@ public class TaskProccesor
 	
 	public ArrayList<Task> GetAllTasks() throws Exception
 	{
-		File fXmlFile = new File(m_xmlPath + "\\sample.xml");
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(fXmlFile);
+		ArrayList<String> fileList = GetTaskFileNames();
 		
-		doc.getDocumentElement().normalize();
-
-		System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+		ArrayList<Task> taskList = new ArrayList<Task>();
 		
-		NodeList taskNameNode = doc.getElementsByTagName("TaskName");
-		
-		System.out.println("Task name: " + taskNameNode.item(0).getTextContent());
-				
-				
-		System.out.println("----------------------------");
-		
-		NodeList stepsNodeList = doc.getElementsByTagName("Step");
-		
-		for (int i = 0; i < stepsNodeList.getLength(); i++) 
+		for(String file : fileList)
 		{
+			File fXmlFile = new File(m_xmlPath + "\\" + file);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
 			
-			Element element = (Element) stepsNodeList.item(i);			
+			doc.getDocumentElement().normalize();		
 			
-			String stepNumber = element.getElementsByTagName("StepNumber").item(0).getTextContent(); 
+			NodeList taskNameNode = doc.getElementsByTagName("TaskName");
 			
-			System.out.println("Step: " + stepNumber);
+			String taskName = taskNameNode.item(0).getTextContent();
+					
+			//get all the steps for the file
+			NodeList stepsNodeList = doc.getElementsByTagName("Step");
 			
-			NodeList actionsNode = element.getElementsByTagName("Actions").item(0).getChildNodes(); 
+			ArrayList<TaskStep> steps = new ArrayList<TaskStep>();	
 			
-			for (int j = 0; j < actionsNode.getLength(); j++) 
+			for (int stepIterator = 0; stepIterator < stepsNodeList.getLength(); stepIterator++) 
 			{
+				Element element = (Element) stepsNodeList.item(stepIterator);
 				
-				if(actionsNode.item(j).hasChildNodes())
+				//Get Step number
+				int stepNumber = Integer.parseInt(element.getElementsByTagName("StepNumber").item(0).getTextContent()); 
+				
+				//get actions for the step
+				NodeList actionsNode = element.getElementsByTagName("Actions").item(0).getChildNodes(); 
+				
+				ArrayList<StepAction> stepActions = new ArrayList<StepAction>();
+				
+				for (int actionIterator = 0; actionIterator < actionsNode.getLength(); actionIterator++) 
 				{
-					
-					System.out.println("========");
-					System.out.println("Action Name: " + actionsNode.item(j).getNodeName());					
-					
-					NodeList byNode = ((Element) actionsNode.item(j)).getElementsByTagName("By");
-					
-					if(byNode.getLength() != 0)
+					if(actionsNode.item(actionIterator).hasChildNodes())
 					{
-						String byType = ((Element)byNode.item(0)).getElementsByTagName("Type").item(0).getTextContent();
-						String byLocation = ((Element)byNode.item(0)).getElementsByTagName("Name").item(0).getTextContent();
+						String action = actionsNode.item(actionIterator).getNodeName();
 						
-						System.out.println("By type:" + byType);
-						System.out.println("By name:" + byLocation);
-					
+						//Get by element if it exists
+						NodeList byNode = ((Element) actionsNode.item(actionIterator)).getElementsByTagName("By");
+						
+						String byType = null;
+						String byLocation = null;
+						String text = null;
+						
+						if(byNode.getLength() != 0)
+						{
+							byType = ((Element)byNode.item(0)).getElementsByTagName("Type").item(0).getTextContent();
+							byLocation = ((Element)byNode.item(0)).getElementsByTagName("Name").item(0).getTextContent();
+						}
+						else
+						{
+							text = actionsNode.item(actionIterator).getTextContent();
+						}
+						
+						NodeList textNode = ((Element) actionsNode.item(actionIterator)).getElementsByTagName("Text");
+						
+						if(textNode.getLength() != 0)
+						{
+							text = textNode.item(0).getTextContent();					
+						}
+						
+						StepAction stepAction = new StepAction(action, byType, byLocation, text);
+						stepActions.add(stepAction);					
 					}
-					else
-					{
-						System.out.println("URL text: " + actionsNode.item(j).getTextContent());
-					}
-					
-					NodeList textNode = ((Element) actionsNode.item(j)).getElementsByTagName("Text");
-					
-					if(textNode.getLength() != 0)
-					{
-						System.out.println("Text to enter: " + textNode.item(0).getTextContent());
-					}
-										
-					
-					System.out.println("========");
 				}
-			
 				
+				TaskStep taskStep = new TaskStep(stepNumber,stepActions);
+				steps.add(taskStep);			
 			}
+			
+			Task task = new Task(taskName, steps);
+			taskList.add(task);
 		}
-	
-		return null;
+		
+		return taskList;
 	}
 	
-	
-	/*	
-	public ArrayList<String> GetTaskNames()
-	{
-		ArrayList<String> taskList = new ArrayList<String>(); 
-		
-		for(String task : GetTaskFileNames())
-		{
-			taskList.add(task.split(".xml")[0]);
-		}
-				
-		return taskList;
-	}*/
 	
 	public TaskStep GetTaskStep()
 	{

@@ -1,29 +1,15 @@
 package CommandLine;
 
-import java.awt.List;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
-import java.lang.reflect.Method;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
 
 import Core.BrowserManager;
 import Core.BrowserManager.BrowserData;
-import Core.TaskProccesor.Task;
 import Core.SeleniumHelper;
 import Core.TaskProccesor;
-
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import Core.TaskProccesor.StepAction;
+import Core.TaskProccesor.Task;
+import Core.TaskProccesor.TaskStep;
 
 public class CommandLine {
 
@@ -39,27 +25,47 @@ public class CommandLine {
 	public static void main(String[] args) throws Exception 
 	{		
 		
-		TaskProccesor taskProccesor = new TaskProccesor();
-		
-		//ArrayList<String> taskNameList = taskProccesor.GetTaskNames();
-		
-		ArrayList<Task> taskList = taskProccesor.GetAllTasks();
-		
-		/*
 		BrowserManager browserManager = new Core.BrowserManager();
 		BrowserData Chrome1  = browserManager.startChrome();
 		
 		Chrome1.m_webDriver.get("http:\\www.google.com");
 		
-		By by = SeleniumHelper.GetFindBy("id", "lst-ib");
+		//By by = SeleniumHelper.GetFindBy("id", "lst-ib");
 		
-		WebElement thing = Chrome1.m_webDriver.findElement(by);
+		//WebElement thing = Chrome1.m_webDriver.findElement(by);
 		
-		thing.sendKeys("TESTING");
+		//thing.sendKeys("TESTING");
 		
-		thing.sendKeys(Keys.RETURN);		
+		//thing.sendKeys(Keys.RETURN);		
 		
-		*/
-		getCommand();
+		
+		
+		
+		
+		TaskProccesor taskProccesor = new TaskProccesor();		
+		
+		ArrayList<Task> taskList = taskProccesor.GetAllTasks(); 
+		
+		
+		
+		
+		for(Task task : taskList){
+			System.out.println("Task name: " + task.m_name);
+
+			System.out.println("----------------------------");
+			for(TaskStep step : task.m_steps)
+			{
+				System.out.println("Step: " + step.m_stepNumber);
+				for(StepAction action : step.m_stepActions)
+				{
+					SeleniumHelper.RunDriverCommand(Chrome1.m_webDriver, action);
+					getCommand();
+				}
+			}
+			System.out.println("----------------------------");
+		}
+				
+		
+		
     }
 }
