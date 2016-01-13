@@ -21,14 +21,16 @@ public class TaskProccesor
 		public String m_action; 
 		public String m_by;
 		public String m_location;
-		public String m_text;			
+		public String m_text;		
+		public String m_key;
 		
-		StepAction(String action,String by, String location, String text)
+		StepAction(String action,String by, String location, String text, String key)
 		{
 			m_action = action;
 			m_by = by;
 			m_location = location;	
 			m_text = text;
+			m_key = key;
 		}
 	}
 	
@@ -115,15 +117,16 @@ public class TaskProccesor
 						String byType = null;
 						String byLocation = null;
 						String text = null;
+						String key = null;
 						
 						if(byNode.getLength() != 0)
 						{
-							byType = ((Element)byNode.item(0)).getElementsByTagName("Type").item(0).getTextContent();
-							byLocation = ((Element)byNode.item(0)).getElementsByTagName("Name").item(0).getTextContent();
+							byType = ((Element)byNode.item(0)).getElementsByTagName("Type").item(0).getTextContent().trim();
+							byLocation = ((Element)byNode.item(0)).getElementsByTagName("Name").item(0).getTextContent().trim();
 						}
 						else
 						{
-							text = actionsNode.item(actionIterator).getTextContent();
+							text = actionsNode.item(actionIterator).getTextContent().trim();
 						}
 						
 						NodeList textNode = ((Element) actionsNode.item(actionIterator)).getElementsByTagName("Text");
@@ -133,7 +136,14 @@ public class TaskProccesor
 							text = textNode.item(0).getTextContent();					
 						}
 						
-						StepAction stepAction = new StepAction(action, byType, byLocation, text);
+						NodeList keyNode = ((Element) actionsNode.item(actionIterator)).getElementsByTagName("Key");
+						
+						if(keyNode.getLength() != 0)
+						{
+							key = keyNode.item(0).getTextContent();					
+						}
+												
+						StepAction stepAction = new StepAction(action, byType, byLocation, text, key);
 						stepActions.add(stepAction);					
 					}
 				}

@@ -6,7 +6,13 @@
 	<Step>
 		<StepNumber>1</StepNumber>
 		<Actions>
-			<get>www.google.com</get>
+			<get>http://www.google.com</get>
+			<click>
+				<By>
+					<Type>id</Type>
+					<Name>lst-ib</Name>
+				</By>
+			</click>
 			<sendKeys>
 				<Text>Step 1 text</Text>
 				<By>
@@ -15,7 +21,7 @@
 				</By>
 			</sendKeys>
 			<sendKeys>
-				<Text>ENTER</Text>
+				<Key>ENTER</Key>
 				<By>
 					<Type>id</Type>
 					<Name>lst-ib</Name>
@@ -26,7 +32,7 @@
 	<Step>
 		<StepNumber>2</StepNumber>
 		<Actions>
-			<get>www.google.com</get>
+			<get>http://www.google.com</get>
 			<sendKeys>
 				<Text>Step 2 text</Text>
 				<By>
@@ -35,7 +41,7 @@
 				</By>
 			</sendKeys>
 			<sendKeys>
-				<Text>ENTER</Text>
+				<Key>ENTER</Key>
 				<By>
 					<Type>id</Type>
 					<Name>lst-ib</Name>
