@@ -1,14 +1,13 @@
 package CommandLine;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
-import Core.BrowserManager;
-import Core.BrowserManager.BrowserData;
-import Core.SeleniumWrapper;
+import Core.DataTypes;
+import Core.DataTypes.BrowserData;
+import Core.DataTypes.ThreadMessage;
 import Core.TaskProccesor;
-import Core.TaskProccesor.StepAction;
-import Core.TaskProccesor.TaskStep;
+import Core.ThreadManager;
+import Core.WorkerThread;
 
 public class CommandLine {
 
@@ -24,34 +23,46 @@ public class CommandLine {
 	{		
 		Core.Utils.debug = true;
 		
-		BrowserManager browserManager = new Core.BrowserManager();
-		BrowserData Chrome1  = browserManager.startChrome();
-				
-		TaskProccesor taskProccesor = new TaskProccesor();		
-		
-		ArrayList<Core.TaskProccesor.Task> taskList = taskProccesor.GetAllTasks(); 
+		BrowserData browserData = new DataTypes().new BrowserData();
+		browserData.m_browserType = "chrome";
 		
 		
-		for(Core.TaskProccesor.Task task : taskList)
-		{
-			Core.Utils.writeLog("Task name: " + task.m_name);
-
-			Core.Utils.writeLog("----------------------------");
-			
-			for(TaskStep step : task.m_steps)
-			{
-				Core.Utils.writeLog("Step: " + step.m_stepNumber);
-				for(StepAction action : step.m_stepActions)
-				{
-					
-					SeleniumWrapper.callWebDriver(Chrome1.m_webDriver, action);					
-					
-					//getCommand();
-				}
-			}
-			Core.Utils.writeLog("----------------------------");
-		}
-				
+		WorkerThread thread1 = ThreadManager.createWorkerThread("Thread-1", browserData);
+	    thread1.start();
+	  
+	    
+	    WorkerThread thread2 = ThreadManager.createWorkerThread("Thread-2", browserData);
+	    thread2.start();
+	    
+	    
+	    Core.Utils.writeLog("Sending message to thread");
+	    
+    	ThreadMessage threadMessage = new DataTypes().new ThreadMessage(thread1.m_threadName, "next");
+    	threadMessage.m_task = TaskProccesor.getTask("Sample");
+    	ThreadManager.sendWorkerMessage(threadMessage);
+    		  
+    	
+	    Core.Utils.writeLog("Sending message to thread");
+	    
+    	ThreadMessage threadMessage2 = new DataTypes().new ThreadMessage(thread2.m_threadName, "next");
+    	threadMessage2.m_task = TaskProccesor.getTask("Sample");
+    	ThreadManager.sendWorkerMessage(threadMessage2);
+    	
+	    String message = "";
+	    
+	    while(!message.equals("EXIT"))
+	    {
+	    	Core.Utils.writeLog("Enter message for thread");
+	    	message = getCommand();
+	    	
+	    	Core.Utils.writeLog("Sending message to thread");
+	    	threadMessage = new DataTypes().new ThreadMessage(thread1.m_threadName, message);
+	    	
+	    	threadMessage = new DataTypes().new ThreadMessage(thread2.m_threadName, message);
+	    	
+	    	ThreadManager.sendWorkerMessage(threadMessage);
+	    }
+		
 		
 		
     }

@@ -11,55 +11,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import Core.DataTypes.StepAction;
+import Core.DataTypes.Task;
+import Core.DataTypes.TaskStep;
+
 
 public class TaskProccesor
 {
-	public String m_xmlPath = "C:\\Users\\wtorchia\\workspace\\TestUtil\\Tasks";
+	public static String m_xmlPath = "C:\\Users\\wtorchia\\workspace\\TestUtil\\Tasks";	
 	
-	public class StepAction 
-	{
-		public String m_action; 
-		public String m_by;
-		public String m_location;
-		public String m_text;		
-		public String m_key;
-		
-		StepAction(String action,String by, String location, String text, String key)
-		{
-			m_action = action;
-			m_by = by;
-			m_location = location;	
-			m_text = text;
-			m_key = key;
-		}
-	}
-	
-	public class TaskStep
-	{
-		public int m_stepNumber;
-		public ArrayList<StepAction> m_stepActions;		
-		
-		public TaskStep(int stepNumber, ArrayList<StepAction> stepActions)
-		{
-			m_stepActions = stepActions;
-			m_stepNumber = stepNumber;
-		}
-	}
-	
-	public class Task
-	{
-		public String m_name;
-		public ArrayList<TaskStep> m_steps;	
-		
-		public Task(String name, ArrayList<TaskStep> steps)
-		{
-			m_name = name;
-			m_steps = steps;
-		}
-	}
-	
-	
-	public ArrayList<String> GetTaskFileNames()
+	public static ArrayList<String> getTaskFileNames()
 	{
 		File files = new File(m_xmlPath);
 		
@@ -69,9 +30,9 @@ public class TaskProccesor
 	}
 	
 	
-	public ArrayList<Task> GetAllTasks() throws Exception
+	public static ArrayList<Task> getAllTasks() throws Exception
 	{
-		ArrayList<String> fileList = GetTaskFileNames();
+		ArrayList<String> fileList = getTaskFileNames();
 		
 		ArrayList<Task> taskList = new ArrayList<Task>();
 		
@@ -143,16 +104,16 @@ public class TaskProccesor
 							key = keyNode.item(0).getTextContent();					
 						}
 												
-						StepAction stepAction = new StepAction(action, byType, byLocation, text, key);
+						StepAction stepAction = new DataTypes().new StepAction(action, byType, byLocation, text, key);
 						stepActions.add(stepAction);					
 					}
 				}
 				
-				TaskStep taskStep = new TaskStep(stepNumber,stepActions);
+				TaskStep taskStep = new DataTypes().new TaskStep(stepNumber,stepActions);
 				steps.add(taskStep);			
 			}
 			
-			Task task = new Task(taskName, steps);
+			Task task = new DataTypes().new Task(taskName, steps);
 			taskList.add(task);
 		}
 		
@@ -160,10 +121,30 @@ public class TaskProccesor
 	}
 	
 	
-	public TaskStep GetTaskStep()
+	static public Task getTask(String taskName) throws Exception
 	{
+		for(Task task : getAllTasks())
+		{
+			if(task.m_name.equals(taskName))
+			{
+				return task;
+			}
+		}
+		
 		return null;
 	}
 	
 	
+	static public TaskStep GetTaskStep(Task task, int stepNumber)
+	{
+		for(TaskStep taskStep : task.m_steps)
+		{
+			if(taskStep.m_stepNumber == stepNumber)
+			{
+				return taskStep;
+			}
+		}
+		
+		return null;
+	}	
 }

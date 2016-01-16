@@ -7,11 +7,11 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import Core.TaskProccesor.StepAction;
+import Core.DataTypes.StepAction;
 
 public class SeleniumWrapper 
 {
-	public static void callWebDriver(WebDriver webDriver, StepAction action)throws Exception
+	public static void callWebDriver(WebDriver webDriver, Core.DataTypes.StepAction action)throws Exception
 	{
 		if(action.m_by != null)
 		{
